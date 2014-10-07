@@ -62,26 +62,26 @@ class modxHelper {
 
 		# Check select
 		if (strpos($query['select'], '@SQL') === 0) {
-		    $query['select'] = substr($query['select'], 4);
+			$query['select'] = substr($query['select'], 4);
 		}
 		else {
-    		$arSelect = explode(',', $query['select']);
-    		$arSelect = array_map('trim', $arSelect);
-    		$arSelect = array_unique($arSelect);
-    		$arSelect = array_filter($arSelect);
+	    		$arSelect = explode(',', $query['select']);
+	    		$arSelect = array_map('trim', $arSelect);
+	    		$arSelect = array_unique($arSelect);
+	    		$arSelect = array_filter($arSelect);
     
-    		$arFields = array_keys($this->modx->getFields($classname));
-    		if (empty($arFields)) {
-    			return $this->fastQueryReturn($arOutput, false, 'У данного объекта нет полей');
-    		}
-            
-    		if (!empty($arSelect)) {
-    			$arSelect = array_intersect($arFields, $arSelect);
-    		}
-    		else {
-    			$arSelect = $arFields;
-    		}
-    		$query['select'] = implode(',', $arSelect);
+    			$arFields = array_keys($this->modx->getFields($classname));
+	    		if (empty($arFields)) {
+	    			return $this->fastQueryReturn($arOutput, false, 'У данного объекта нет полей');
+	    		}
+	            
+	    		if (!empty($arSelect)) {
+	    			$arSelect = array_intersect($arFields, $arSelect);
+	    		}
+	    		else {
+	    			$arSelect = $arFields;
+	    		}
+	    		$query['select'] = implode(',', $arSelect);
 		}
 		
 		# Check convertation field
@@ -181,27 +181,27 @@ class modxHelper {
 	}
 	
 	public function downloadPage($url, $type = 'GET', $data = array()) {
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        if ($type == 'GET' && !empty($data) && is_array($data)) {
-            $linkQuery = http_build_query($data);
-            $andCond = '?';
-            if (strpos($url, $andCond) !== false) {
-                $andCond = '&';
-            }
-            $url .= $andCond.$linkQuery;
-        }
-        if ($type == 'POST') {
-            curl_setopt($ch, CURLOPT_POST, 1);
-            if (!empty($data) && is_array($data)) {
-                curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
-            }
-        }
-        curl_setopt($ch, CURLOPT_URL,$url);
-        $result=curl_exec($ch);
-        curl_close($ch);
-        return $result;
+	        $ch = curl_init();
+	        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+	        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+	        if ($type == 'GET' && !empty($data) && is_array($data)) {
+	            $linkQuery = http_build_query($data);
+	            $andCond = '?';
+	            if (strpos($url, $andCond) !== false) {
+	                $andCond = '&';
+	            }
+	            $url .= $andCond.$linkQuery;
+	        }
+	        if ($type == 'POST') {
+	            curl_setopt($ch, CURLOPT_POST, 1);
+	            if (!empty($data) && is_array($data)) {
+	                curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+	            }
+	        }
+	        curl_setopt($ch, CURLOPT_URL,$url);
+	        $result=curl_exec($ch);
+	        curl_close($ch);
+	        return $result;
 	}
 
 	public function getHeaders($url, $type = 'GET', $data = array()) {
@@ -235,8 +235,10 @@ class modxHelper {
 		curl_close( $ch );
 		fclose( $fp );
         
-    	if (filesize($path) > 0) return true;
-    	unlink($path);
+	    	if (filesize($path) > 0) {
+	    		return true;
+	    	}
+	    	unlink($path);
 		
 		return false;
 	}
@@ -256,27 +258,27 @@ class modxHelper {
 	}
 	
 	public function xml2array($xmlstring) {
-	    $xml = simplexml_load_string($xmlstring);
-        $json = json_encode($xml);
-        $array = json_decode($json,TRUE);
-        return $array;
+	    	$xml = simplexml_load_string($xmlstring);
+	        $json = json_encode($xml);
+	        $array = json_decode($json,TRUE);
+	        return $array;
 	}
 	
 	public function array2xml($input, &$xml, $numericOff = false) {
-        foreach($input as $key => $value) {
-            //$key = is_numeric($key) ? "item$key" : $key;
-            if ($numericOff && is_numeric($key)) { $key = 'item'; }
-            elseif (is_numeric($key)) { $key = 'item'.$key; }
-            
-            if(is_array($value)) {
-                $subnode = $xml->addChild("$key");
-                $this->array2xml($value, $subnode, $numericOff);
-            }
-            else {
-                $xml->addChild("$key","$value");
-            }
-        }
-    }
+		foreach($input as $key => $value) {
+			//$key = is_numeric($key) ? "item$key" : $key;
+			if ($numericOff && is_numeric($key)) { $key = 'item'; }
+			elseif (is_numeric($key)) { $key = 'item'.$key; }
+			
+			if(is_array($value)) {
+				$subnode = $xml->addChild("$key");
+				$this->array2xml($value, $subnode, $numericOff);
+			}
+			else {
+				$xml->addChild("$key","$value");
+			}
+		}
+	}
     
     public function readxml($file, $return = 'array') {
         if (!file_exists($file)) {
