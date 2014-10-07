@@ -3,7 +3,7 @@
 /**
  * class modxHelper by DARTC
  * 
- * version 2014-09-04 11:40
+ * version 2014-10-07 13:00
  */
 
 class modxHelper {
@@ -430,6 +430,66 @@ class modxHelper {
 		}
 		
 		return strtr($str, $this->translitTable);
+	}
+	
+	
+	public function zipProcess($arFiles, $sZipPath, $debug = 0) {
+		if (!is_array($arFiles) || empty($arFiles) || !is_string($sZipPath) || empty($sZipPath)) {
+			return false;
+		}
+		
+		$inputFiles = array();
+		foreach ($arFiles as $k => $path) {
+			if (!file_exists($path)) {
+				continue;
+			}
+			$info = pathinfo($path);
+			$info['newfilename'] = $this->translit($info['filename']);
+			$info['newbasename'] = str_replace($info['filename'], $info['newfilename'], $info['basename']);
+			$info['fullpath'] = $path;
+			
+			$inputFiles[$info['newbasename']] = $info;
+		}
+		
+		
+		$zip = new zipArchive();
+		$zip->open($sZipPath, ZIPARCHIVE::CREATE);
+		
+		$archiveFiles = array();
+		for ($i = 0; $i < $zip->numFiles; $i++) {
+			$archiveFiles[$zip->getNameIndex($i)] = 1;
+		}
+		
+		
+		$files = array(
+			'input' => array_keys($inputFiles),
+			'archive' => array_keys($archiveFiles),
+			);
+		
+		$addFiles = array_diff($files['input'], $files['archive']);
+		$delFiles = array_diff($files['archive'], $files['input']);
+		$issFiles = array_intersect($files['archive'], $files['input']);
+		
+		if (isset($debug) && $debug === 1) {
+			echo '<b>Add</b>'.$this->var_export($addFiles);
+			echo '<b>Del</b>'.$this->var_export($delFiles);
+			echo '<b>Iss</b>'.$this->var_export($issFiles);
+		}
+		
+		
+		foreach ($addFiles as $filename) {
+			$zip->addFile($inputFiles[$filename]['fullpath'], $filename);
+		}
+		foreach ($delFiles as $filename) {
+			$zip->deleteName($filename);
+		}
+		
+		$bResultStatus = $zip->close();
+		
+		$zip = null;
+		unset($zip);
+		
+		return $bResultStatus;
 	}
 
 }
