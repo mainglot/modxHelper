@@ -280,121 +280,121 @@ class modxHelper {
 		}
 	}
     
-    public function readxml($file, $return = 'array') {
-        if (!file_exists($file)) {
-            return false;
-        }
-        
-        $fo = fopen($file, 'r+');
-        if ($fo === false) {
-            return false;
-        }
-        $xmlstring = fread($fo, filesize($file));
-        fclose($fo);
-        
-        if ($return == 'array') {
-            return $this->xml2array($xmlstring);
-        }
-        
-        return $xmlstring;
-    }
+	public function readxml($file, $return = 'array') {
+		if (!file_exists($file)) {
+		    return false;
+		}
+		
+		$fo = fopen($file, 'r+');
+		if ($fo === false) {
+		    return false;
+		}
+		$xmlstring = fread($fo, filesize($file));
+		fclose($fo);
+		
+		if ($return == 'array') {
+		    return $this->xml2array($xmlstring);
+		}
+		
+		return $xmlstring;
+	}
     
-    public function writexml($file, $array = array(), $into = 'data') {
-        $path = dirname($file);
-        if (!file_exists($path)) {
-            return false;
-        }
-        
-        $into = str_replace(array('<','>'),'',$into);
-        $xml = new SimpleXMLElement('<?xml version="1.0" encoding="UTF-8"?><'.$into.'></'.$into.'>');
-        $this->array2xml($array, $xml, true);
-        
-        return $xml->asXML($file);
-    }
+	public function writexml($file, $array = array(), $into = 'data') {
+		$path = dirname($file);
+		if (!file_exists($path)) {
+		    return false;
+		}
+		
+		$into = str_replace(array('<','>'),'',$into);
+		$xml = new SimpleXMLElement('<?xml version="1.0" encoding="UTF-8"?><'.$into.'></'.$into.'>');
+		$this->array2xml($array, $xml, true);
+		
+		return $xml->asXML($file);
+	}
     
-    public function ignore_other_executes ($filename = '') {
-        if (empty($filename)) {
-            $filename = md5($_SERVER['PHP_SELF']);
-        }
-        $this->ignore_other_executes_file = MODX_BASE_PATH.$filename.'.tmp';
-        
-        // clearstatcache(true, $this->ignore_other_executes_file);
-        // echo $this->ignore_other_executes_file .' === '. (int)is_file($this->ignore_other_executes_file).'<br>';
-        
-        clearstatcache(true, $this->ignore_other_executes_file);
-        if (is_file($this->ignore_other_executes_file)) {
-            exit('Synchonization has already started! Please wait several minutes and try again.');
-        }
-        
-        $rFile = fopen($this->ignore_other_executes_file, 'w+');
-        $string = microtime();
-        fwrite($rFile, $string);
-        fclose($rFile);
-        
-        clearstatcache(true, $this->ignore_other_executes_file);
-        if (!is_file($this->ignore_other_executes_file)) {
-            exit('We couldn`t create garant for synchronization!');
-        }
-        
-        // echo $string.'<br>';
-        
-        register_shutdown_function(array($this, 'ignore_other_executes_Callback'));
-    }
+	public function ignore_other_executes ($filename = '') {
+		if (empty($filename)) {
+		    $filename = md5($_SERVER['PHP_SELF']);
+		}
+		$this->ignore_other_executes_file = MODX_BASE_PATH.$filename.'.tmp';
+		
+		// clearstatcache(true, $this->ignore_other_executes_file);
+		// echo $this->ignore_other_executes_file .' === '. (int)is_file($this->ignore_other_executes_file).'<br>';
+		
+		clearstatcache(true, $this->ignore_other_executes_file);
+		if (is_file($this->ignore_other_executes_file)) {
+		    exit('Synchonization has already started! Please wait several minutes and try again.');
+		}
+		
+		$rFile = fopen($this->ignore_other_executes_file, 'w+');
+		$string = microtime();
+		fwrite($rFile, $string);
+		fclose($rFile);
+		
+		clearstatcache(true, $this->ignore_other_executes_file);
+		if (!is_file($this->ignore_other_executes_file)) {
+		    exit('We couldn`t create garant for synchronization!');
+		}
+		
+		// echo $string.'<br>';
+		
+		register_shutdown_function(array($this, 'ignore_other_executes_Callback'));
+	}
     
-    public function ignore_other_executes_Callback () {
-        // echo '<br>';
-        // readfile($this->ignore_other_executes_file);
-        // echo '<br>'.microtime().'<br>';
-        unlink($this->ignore_other_executes_file);
-    }
+	public function ignore_other_executes_Callback () {
+		// echo '<br>';
+		// readfile($this->ignore_other_executes_file);
+		// echo '<br>'.microtime().'<br>';
+		unlink($this->ignore_other_executes_file);
+	}
     
-    public function fastTVData($ids, $TVList, $isNumber = false, $where = array()) {
-        if (!is_array($ids)) {
-            $ids = $this->explode(',', $ids);
-        }
-        if (!is_array($TVList)) {
-            $TVList = $this->explode(',', $TVList);
-        }
-        
-        ### Get information about TV`s fields
-        $findby = 'name';
-        
-        if ($isNumber) {
-            $findby = 'id';
-        }
-        
-        $TVInfo = $this->fastQuery(
-            'modTemplateVar',
-            array(
-                'where' => array(
-                    $findby.':IN' => $TVList,
-                    ),
-                )
-            );
-        
-        ### Get raw data from DB
-        $TVData = $this->fastQuery(
-            'modTemplateVarResource',
-            array(
-                'where' => array_merge(array(
-                    'contentid:IN' => $ids,
-                    'tmplvarid:IN' => array_keys($TVInfo['data']),
-                    ), $where),
-                ),
-            'contentid',
-            true
-            );
-            
-        $arOutput = array();
-        foreach ($TVData['data'] as $docID => $items) {
-            foreach ($items as $item) {
-                $tvName = &$TVInfo['data'][$item['tmplvarid']][0]['name'];
-                $arOutput[$docID][$tvName] = $item['value'];
-            }
-        }
-        
-        return $arOutput;
-    }
+	public function fastTVData($ids, $TVList, $isNumber = false, $where = array()) {
+		if (!is_array($ids)) {
+			$ids = $this->explode(',', $ids);
+		}
+		if (!is_array($TVList)) {
+			$TVList = $this->explode(',', $TVList);
+		}
+		
+		### Get information about TV`s fields
+		$findby = 'name';
+		
+		if ($isNumber) {
+			$findby = 'id';
+		}
+		
+		$TVInfo = $this->fastQuery(
+			'modTemplateVar',
+			array(
+			'where' => array(
+				$findby.':IN' => $TVList,
+			    	),
+			)
+			);
+		
+		### Get raw data from DB
+		$TVData = $this->fastQuery(
+			'modTemplateVarResource',
+			array(
+			'where' => array_merge(array(
+				'contentid:IN' => $ids,
+				'tmplvarid:IN' => array_keys($TVInfo['data']),
+				), $where),
+			),
+			'contentid',
+			true
+			);
+		    
+		$arOutput = array();
+		foreach ($TVData['data'] as $docID => $items) {
+			foreach ($items as $item) {
+				$tvName = &$TVInfo['data'][$item['tmplvarid']][0]['name'];
+				$arOutput[$docID][$tvName] = $item['value'];
+			}
+		}
+		
+		return $arOutput;
+	}
 
 }
 
