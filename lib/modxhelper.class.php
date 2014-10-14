@@ -13,6 +13,8 @@ class modxHelper {
 	}
 
 	public function __call($method, $arguments) {
+		
+		$method = strtolower($method);
 		switch ($method) {
 			
 			case 'print_r':
