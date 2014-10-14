@@ -3,7 +3,7 @@
 /**
  * class modxHelper by DARTC
  * 
- * version 2014-10-07 13:00
+ * version 2014-10-14 11:00
  */
 
 class modxHelper {
