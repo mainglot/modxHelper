@@ -491,6 +491,93 @@ class modxHelper {
 		
 		return $bResultStatus;
 	}
+	
+	
+	public $cache_way_default = 'modxhelper/';
+	public $cache_key_hash = 'md5';
+	public $cache_lifetime = 7200;
+	
+	public function cache ($action, $key = '', $data = array(), $way = '', $lifetime = 0) {
+		$action = empty($action) || !is_string($action) ? 'get' : $action;
+		$key = hash($this->cache_key_hash, (string) $key);
+		$lifetime = is_int($lifetime) ? $lifetime : $this->cache_lifetime;
+		$way = !empty($way) && is_string($way) ? $way : $this->cache_way_default;
+		
+		$output = array(
+			'msg' => 'Start cache function',
+			'data' => array(),
+		);
+		
+		$cache_options = array(xPDO::OPT_CACHE_KEY => $way);
+		
+		switch ($action) {
+		
+			case 'get':
+				if (empty($key)) {
+					$output['msg'] = 'Empty key';
+				break;
+				}
+				
+				$output['data'] = $this->modx->cacheManager->get($key, $cache_options);
+				if (empty($output['data'])) {
+					$output['msg'] = 'Data from cache isn`t exist';
+				}
+				else {
+					$output['msg'] = 'Success';
+				}
+				break;
+			
+			case 'add':
+			case 'set':
+				if (empty($key)) {
+					$output['msg'] = 'Empty key';
+					break;
+				}
+				
+				$result = $this->modx->cacheManager->set($key, $data, $lifetime, $cache_options);
+				$output['data'] = $key;
+				if ($result) {
+					$output['msg'] = 'Data updated in cache';
+				}
+				else {
+					$output['msg'] = 'Data wasn`t updated in cache';
+				}
+			break;
+			
+			case 'delete':
+			case 'remove':
+				if (empty($key)) {
+					$output['msg'] = 'Empty key';
+					break;
+				}
+				
+				$result = $this->modx->cacheManager->delete($key, $cache_options);
+				$output['data'] = $key;
+				if ($result) {
+					$output['msg'] = 'Data updated in cache';
+				}
+				else {
+					$output['msg'] = 'Data wasn`t updated in cache';
+				}
+			break;
+			
+			case 'clean':
+				$result = $this->modx->cacheManager->clean($cache_options);
+				if ($result) {
+					$output['msg'] = 'Data cleaned in cache';
+				}
+				else {
+					$output['msg'] = 'Data wasn`t cleaned in cache';
+				}
+			break;
+			
+			default:
+				$output['msg'] = 'Incorrect value of action';
+			break;
+		}
+		
+		return $output;
+	}
 
 }
 
