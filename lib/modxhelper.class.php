@@ -126,7 +126,7 @@ class modxHelper {
 			$objectQuery->where($query['where']);
 		}
 		if (!empty($query['sortby']['field'])) {
-			$objectQuery->sortby($query['sortby']['field'], $query['orderby']['dir']);
+			$objectQuery->sortby($query['sortby']['field'], $query['sortby']['dir']);
 		}
 		$objectQuery->limit($query['limit'], $query['offset']);
 
