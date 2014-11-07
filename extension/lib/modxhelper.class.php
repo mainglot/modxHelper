@@ -8,6 +8,10 @@
 
 class modxHelper {
 
+	/**
+	 * Start object only with $modx
+	 * @param modX $modx - main variable of MODX Revo
+	 */
 	public function __construct($modx) {
 		$this->modx = $modx;
 	}
@@ -27,10 +31,24 @@ class modxHelper {
 		}
 	}
 
+	/**
+	 * Return string into <pre><code>...</code></pre>
+	 * @param  string $str
+	 * @return string
+	 */
 	public function pre ($str) {
 		return '<pre><code>'.(string)$str.'</code></pre>';
 	}
 
+	/**
+	 * fastQuery use xPDO-object like simple PDO
+	 * @param  string  $classname    name of xPDO classname of object
+	 * @param  array   $query        parameters for xPDO-object: select, where, sortby, join, limit, offset
+	 * @param  string  $convertField result sort by it
+	 * @param  boolean $showSQL      show MySQL-query in result array
+	 * @param  string  $return       can be data (default) or onlydata (only result from DB)
+	 * @return array
+	 */
 	public function fastQuery($classname, $query = array(), $convertField = 'id', $showSQL = false, $return = 'data') {
 		$query = array_merge(array(
 			'select' => '',
@@ -182,6 +200,13 @@ class modxHelper {
 		return $arOutput;
 	}
 	
+	/**
+	 * create HTTP-query and return result
+	 * @param  string $url  link
+	 * @param  string $type query method: GET or POST
+	 * @param  array  $data query-data
+	 * @return string       result of query
+	 */
 	public function downloadPage($url, $type = 'GET', $data = array()) {
 	        $ch = curl_init();
 	        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
@@ -206,6 +231,11 @@ class modxHelper {
 	        return $result;
 	}
 
+	/**
+	 * getHeaders return only HTTP-headers for query
+	 * @param  string $url  link
+	 * @return array       HTTP headers
+	 */
 	public function getHeaders($url, $type = 'GET', $data = array()) {
 		$ch = curl_init($url);
 		curl_setopt( $ch, CURLOPT_NOBODY, true );
@@ -220,6 +250,12 @@ class modxHelper {
 		return $headers;
 	}
 
+	/**
+	 * downloadFileFromTo
+	 * @param  string $url  link to file
+	 * @param  string $path correct path to file
+	 * @return boolean      result of downloading
+	 */
 	public function downloadFileFromTo ($url, $path) {
 		$fp = fopen ($path, 'wb+');
 		$ch = curl_init();
@@ -245,6 +281,15 @@ class modxHelper {
 		return false;
 	}
 	
+	/**
+	 * fast explode array
+	 * @param  string  $delimiter 
+	 * @param  string  $string   
+	 * @param  boolean $unique   
+	 * @param  boolean $filter   
+	 * @param  boolean $trim     
+	 * @return array             
+	 */
 	public function explode($delimiter, &$string, $unique = true, $filter = true, $trim = true) {
 	    $arOutput = array();
 	    if (empty($string) || empty($delimiter)) {
@@ -259,6 +304,11 @@ class modxHelper {
 	    return $arOutput;
 	}
 	
+	/**
+	 * fast convert xml to array
+	 * @param  string $xmlstring xml-string
+	 * @return array            
+	 */
 	public function xml2array($xmlstring) {
 	    	$xml = simplexml_load_string($xmlstring);
 	        $json = json_encode($xml);
@@ -266,6 +316,12 @@ class modxHelper {
 	        return $array;
 	}
 	
+	/**
+	 * fast convert array to xml
+	 * @param  array  $input      
+	 * @param  object  $xml        
+	 * @param  boolean $numericOff 
+	 */
 	public function array2xml($input, &$xml, $numericOff = false) {
 		foreach($input as $key => $value) {
 			//$key = is_numeric($key) ? "item$key" : $key;
@@ -282,6 +338,12 @@ class modxHelper {
 		}
 	}
     
+	/**
+	 * fast read xml
+	 * @param  string $file   correct path to file
+	 * @param  string $return array or any other
+	 * @return object|array 
+	 */
 	public function readxml($file, $return = 'array') {
 		if (!file_exists($file)) {
 		    return false;
@@ -301,6 +363,13 @@ class modxHelper {
 		return $xmlstring;
 	}
     
+	/**
+	 * fast write xml to file
+	 * @param  string $file  correct path to file
+	 * @param  array  $array data
+	 * @param  string $into  main xml-tag
+	 * @return boolean
+	 */
 	public function writexml($file, $array = array(), $into = 'data') {
 		$path = dirname($file);
 		if (!file_exists($path)) {
@@ -314,6 +383,15 @@ class modxHelper {
 		return $xml->asXML($file);
 	}
     
+	/**
+	 * ignore_other_executes create temporary file, 
+	 * which will be deleted after script ending, 
+	 * and any other process will be stoped 
+	 * while this temporary file is exist
+	 * @uses register_shutdown_function()
+	 * @uses self::ignore_other_executes_Callback()
+	 * @param  string $filename correct path
+	 */
 	public function ignore_other_executes ($filename = '') {
 		if (empty($filename)) {
 		    $filename = md5($_SERVER['PHP_SELF']);
@@ -350,6 +428,14 @@ class modxHelper {
 		unlink($this->ignore_other_executes_file);
 	}
     
+	/**
+	 * fastTVData
+	 * @param  mixed  $ids      list ids of modResource
+	 * @param  mixed  $TVList   list names or ids of TV
+	 * @param  boolean $isNumber must be true if list uses ids
+	 * @param  array   $where    xPDOObject->where()
+	 * @return array
+	 */
 	public function fastTVData($ids, $TVList, $isNumber = false, $where = array()) {
 		if (!is_array($ids)) {
 			$ids = $this->explode(',', $ids);
@@ -398,6 +484,11 @@ class modxHelper {
 		return $arOutput;
 	}
 	
+	/**
+	 * translit ru to en
+	 * @param  string $str
+	 * @return strin      
+	 */
 	public function translit($str) {
 		if (isset($this->modx->translit)) {
 			return $this->modx->translit->translate($str, 'russian');
@@ -434,7 +525,13 @@ class modxHelper {
 		return strtr($str, $this->translitTable);
 	}
 	
-	
+	/**
+	 * zipProcess - create or update zip-file
+	 * @param  array  $arFiles  list of correct filepath
+	 * @param  string  $sZipPath correct zip-path
+	 * @param  integer $debug    default 0, if need debug must be 1
+	 * @return boolean	result of update zip-file
+	 */
 	public function zipProcess($arFiles, $sZipPath, $debug = 0) {
 		if (!is_array($arFiles) || empty($arFiles) || !is_string($sZipPath) || empty($sZipPath)) {
 			return false;
@@ -499,6 +596,16 @@ class modxHelper {
 	public $cache_key_hash = 'md5';
 	public $cache_lifetime = 7200;
 	
+	/**
+	 * cache is simple way to use modX::cacheManager
+	 * @uses modX::cacheManager
+	 * @param  string  $action   get|set|delete|clean
+	 * @param  string  $key      cache-key
+	 * @param  array   $data     data to cache
+	 * @param  string  $way      path in cache directory
+	 * @param  integer $lifetime 
+	 * @return array 	'msg' has status and 'data' has data
+	 */
 	public function cache ($action, $key = '', $data = array(), $way = '', $lifetime = 0) {
 		$action = empty($action) || !is_string($action) ? 'get' : $action;
 		$key = hash($this->cache_key_hash, (string) $key);
