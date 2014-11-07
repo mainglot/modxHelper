@@ -5,3 +5,4 @@ modxHelper
 * `->print_r()` - return array use `->pre()`
 * `->var_export()` - return info use `->pre()`
 * `->var_dump()` - return info use `->pre()`
+* `->fastQuery($classname, $query = array(), $convertField = 'id', $showSQL = false, $return = 'data')`
