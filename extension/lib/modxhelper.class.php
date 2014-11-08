@@ -3,7 +3,7 @@
 /**
  * class modxHelper by DARTC
  * 
- * version 2014-10-14 11:00
+ * version 2014-11-08 12:35
  */
 
 class modxHelper {
@@ -686,6 +686,27 @@ class modxHelper {
 		}
 		
 		return $output;
+	}
+	
+	public $iconvFrom;
+	public $iconvTo;
+	
+	public function iconvArray ($array, $from, $to) {
+		$this->iconvFrom = (string)$from;
+		$this->iconvTo = (string)$to;
+		return array_walk_recursive($array, array($this, 'iconv'));	
+	}
+	
+	public function iconv (&$value, $from = '', $to = '') {
+		if (empty($this->iconvFrom)) {
+			$this->iconvFrom = (string)$from;
+		}
+		if (empty($this->iconvTo)) {
+			$this->iconvTo = (string)$to;
+		}
+	        if (is_string($value)) {
+			$value = iconv($this->iconvFrom, $this->iconvTo, $value);
+		}
 	}
 
 }
