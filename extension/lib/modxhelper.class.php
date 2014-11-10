@@ -694,7 +694,8 @@ class modxHelper {
 	public function iconvArray ($array, $from, $to) {
 		$this->iconvFrom = (string)$from;
 		$this->iconvTo = (string)$to;
-		return array_walk_recursive($array, array($this, 'iconv'));	
+		array_walk_recursive($array, array($this, 'iconv'));
+		return $array;
 	}
 	
 	public function iconv (&$value, $from = '', $to = '') {
