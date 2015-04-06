@@ -3,7 +3,7 @@
 /**
  * class modxHelper by DARTC
  * 
- * version 2015-02-10 14:28
+ * version 2015-04-07 14:28
  */
 
 class modxHelper {
@@ -895,6 +895,102 @@ class modxHelper {
 		}
 		
 		return (string)number_format((float)$number, $decim, $delim, $thous);
+	}
+	
+	/**
+	* Send email
+	* Required fields:<br>
+	* array(<br>
+	*      'html' > '',<br>
+	*      'emailFrom' => '',<br>
+	*      'emailFromName' => '',<br>
+	*      'emailSender' => '',<br>
+	*      'emailSubject' => '',<br>
+	*      'emailTo' => '',<br>
+	*      'files' => array(),<br>
+	*      );<br>
+	* 'files' => array(<br>
+	*      array('path' => '', 'name' => ''),<br>
+	*      )<br>
+	* @param mixed $arData
+	* @return boolean|string
+	*/
+	public function sendEmail($arData) {
+		$this->modx->getService('mail', 'mail.modPHPMailer');
+		if (!isset($this->modx->mail)) {
+			$this->modx->log(modX::LOG_LEVEL_ERROR, 'Could not init mail service');
+			return false;
+		}
+		
+		$requiredFields = array(
+			'html',
+			'emailFrom',
+			'emailFromName',
+			'emailSender',
+			'emailSubject',
+			'emailTo',
+		);
+		$errors = array();
+		foreach ($requiredFields as $f)  {
+			if (!isset($arData[$f])) {
+				$errors[] = $f.' not exists';
+				continue;
+			}
+			if (empty($arData[$f])) {
+				$errors[] = $f.' is empty';
+			}
+		}
+		if (!empty($errors)) {
+			return $errors;
+		}
+		
+		$this->modx->mail->set(modMail::MAIL_BODY, $arData['html']);
+		$this->modx->mail->set(modMail::MAIL_FROM, $arData['emailFrom']);
+		$this->modx->mail->set(modMail::MAIL_FROM_NAME, $arData['emailFromName']);
+		$this->modx->mail->set(modMail::MAIL_SENDER, $arData['emailSender']);
+		$this->modx->mail->set(modMail::MAIL_SUBJECT, $arData['emailSubject']);
+		
+		$this->modx->mail->setHTML(true);
+		
+		if (is_string($arData['emailTo'])) {
+			$arData['emailTo'] = array($arData['emailTo']);
+		}
+		
+		$arData['emailTo'] = array_unique($arData['emailTo']);
+		$arData['emailTo'] = array_filter($arData['emailTo']);
+		foreach ($arData['emailTo'] as $email) {
+			$this->modx->mail->address('to', $email);
+		}
+		
+		if (!is_array($arData['files'])) {
+			$arData['files'] = array();
+		}
+		
+		foreach ($arData['files'] as $file) {
+			if (!isset($file['path'])
+			||empty($file['path'])
+			|| !file_exists($file['path'])
+			|| !is_file($file['path'])
+			) {
+				continue;
+			}
+		
+			if (!isset($file['name']) || empty($file['name'])) {
+				$file['name'] = basename($file['path']);
+			}
+		
+			$this->modx->mail->mailer->AddAttachment(
+				$file['path'], $file['name'],
+				'base64', 'application/octet-stream'
+				);
+		}
+		
+		if (!$this->modx->mail->send()) {
+			$this->modx->log(modX::LOG_LEVEL_ERROR, 'An error occurred while trying to send the email: '.$this->modx->mail->mailer->ErrorInfo);
+		}
+		
+		$this->modx->mail->reset();
+		return true;
 	}
 
 }
