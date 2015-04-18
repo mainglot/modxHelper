@@ -3,7 +3,7 @@
 /**
  * class modxHelper by DARTC
  * 
- * version 2015-04-07 14:28
+ * version 2015-04-18 12:14
  */
 
 class modxHelper {
@@ -991,6 +991,34 @@ class modxHelper {
 		
 		$this->modx->mail->reset();
 		return true;
+	}
+	
+	
+	public function getMemoryInfo($return = 'MB', $peak = false) {
+		$peak = (boolean) $peak;
+		$memory = 0;
+		if ($peak) {
+			$memory = memory_get_peak_usage();
+		}
+		else {
+			$memory = memory_get_usage();
+		}
+		
+		$o = '';
+		switch($return) {
+			case 'MB':
+				$megabytes = round($memory / (1024 * 1024), 5);
+				$o .= $megabytes.' MB';
+				break;
+			case 'bytes':
+				$o = $memory;
+				break;
+			default:
+				$o .= $memory.' bytes';
+				break;
+		}
+		
+		return $o;
 	}
 
 }
