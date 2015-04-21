@@ -3,7 +3,7 @@
 /**
  * class modxHelper by DARTC
  * 
- * version 2015-04-18 12:14
+ * version 2015-04-21 17:48
  */
 
 class modxHelper {
@@ -102,6 +102,14 @@ class modxHelper {
 	    			$arSelect = $arFields;
 	    		}
 	    		$query['select'] = implode(',', $arSelect);
+		}
+		
+		# Doodles
+		if (!isset($arFields)) {
+			$arFields = array();
+		}
+		if (!isset($arSelect)) {
+			$arSelect = array();
 		}
 		
 		# Check convertation field
