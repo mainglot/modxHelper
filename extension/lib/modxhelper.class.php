@@ -886,6 +886,13 @@ class modxHelper {
 	
 	public function numbformat($number, $flag = 'RU') {
 		switch ($flag) {
+			case 'RU-int':
+			case 'RU-integer':
+				$decim = 0;
+				$delim = ',';
+				$thous = ' ';
+				break;
+			
 			case 'RU':
 			default:
 				$decim = 2;
