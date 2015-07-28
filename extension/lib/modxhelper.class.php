@@ -3,7 +3,7 @@
 /**
  * class modxHelper by DARTC
  * 
- * version 2015-04-21 17:48
+ * version 2015-07-28 11:50
  */
 
 class modxHelper {
@@ -1034,6 +1034,14 @@ class modxHelper {
 		}
 		
 		return $o;
+	}
+	
+	public function delTree($dir) { 
+		$files = array_diff(scandir($dir), array('.','..')); 
+		foreach ($files as $file) { 
+			(is_dir("$dir/$file")) ? $this->delTree("$dir/$file") : unlink("$dir/$file"); 
+		} 
+		return rmdir($dir); 
 	}
 
 }
