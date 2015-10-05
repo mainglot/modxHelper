@@ -492,6 +492,46 @@ class modxHelper {
 		return $arOutput;
 	}
 	
+	public function fastTVValues($TVList, $contentIds = array(), $sortby = 'contentid') {
+		if (!is_array($tvList)) {
+			$TVList = $this->explode(',', $TVList);
+		}
+		$TVList2 = array_filter(array_map('intval', $TVList));
+
+		$sortby = in_array($sortby, array('contentid', 'tmplvarid', 'id', 'value')) ? $sortby : 'contentid';
+
+		$findby = 'name';
+		if (count($TVList2) === count($tvList) && $TVList2 == $TVList) {
+			$TVList = $TVList2;
+			$findby = 'id';
+		}
+
+		$TVInfo = $this->fastQuery(
+			'modTemplateVar',
+			array(
+				'where' => array(
+					$findby.':IN' => $TVList,
+				    	),
+				)
+			);
+		
+		### Get raw data from DB
+		$TVData = $this->fastQuery(
+			'modTemplateVarResource',
+			array(
+			'where' => array_merge(array(
+				'contentid:IN' => $ids,
+				'tmplvarid:IN' => array_keys($TVInfo['data']),
+				), $where),
+			),
+			$sortby,
+			true
+			);
+
+		return $TVData['data'];
+
+	}
+	
 	/**
 	 * translit ru to en
 	 * @param  string $str
