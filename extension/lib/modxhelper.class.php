@@ -234,7 +234,7 @@ class modxHelper {
 	            }
 	        }
 	        curl_setopt($ch, CURLOPT_URL,$url);
-	        $result=curl_exec($ch);
+	        $result = curl_exec($ch);
 	        curl_close($ch);
 	        return $result;
 	}
@@ -281,11 +281,11 @@ class modxHelper {
 		curl_close( $ch );
 		fclose( $fp );
         
-	    	if (filesize($path) > 0) {
-	    		return true;
-	    	}
-	    	unlink($path);
-		
+        if (filesize($path) > 0) {
+            return true;
+        }
+
+        unlink($path);
 		return false;
 	}
 	
