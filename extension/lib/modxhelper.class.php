@@ -493,7 +493,7 @@ class modxHelper {
 	}
 	
 	public function fastTVValues($TVList, $contentIds = array(), $sortby = 'contentid') {
-		if (!is_array($tvList)) {
+		if (!is_array($TVList)) {
 			$TVList = $this->explode(',', $TVList);
 		}
 		$TVList2 = array_filter(array_map('intval', $TVList));
@@ -501,7 +501,7 @@ class modxHelper {
 		$sortby = in_array($sortby, array('contentid', 'tmplvarid', 'id', 'value')) ? $sortby : 'contentid';
 
 		$findby = 'name';
-		if (count($TVList2) === count($tvList) && $TVList2 == $TVList) {
+		if (count($TVList2) === count($TVList) && $TVList2 == $TVList) {
 			$TVList = $TVList2;
 			$findby = 'id';
 		}
@@ -516,11 +516,13 @@ class modxHelper {
 			);
 		
 		### Get raw data from DB
+        $where = array();
+
 		$TVData = $this->fastQuery(
 			'modTemplateVarResource',
 			array(
 			'where' => array_merge(array(
-				'contentid:IN' => $ids,
+				'contentid:IN' => $contentIds,
 				'tmplvarid:IN' => array_keys($TVInfo['data']),
 				), $where),
 			),
@@ -859,17 +861,19 @@ class modxHelper {
 			'platform'  => (string)$platform,
 			'pattern'    => (string)$pattern
 		);
-	} 
-	
-	/**
-	* Возвращает сумму прописью
-	* @author runcore
-	* @uses morph(...)
-	* 
-	* http://habrahabr.ru/post/53210/
-	* 
-	* num2str(878867.15); // восемьсот семьдесят восемь тысяч восемьсот шестьдесят семь рублей 15 копеек
-	*/
+	}
+
+    /**
+     * Возвращает сумму прописью
+     * @author runcore
+     * @uses morph(...)
+     *
+     * http://habrahabr.ru/post/53210/
+     *
+     * num2str(878867.15); // восемьсот семьдесят восемь тысяч восемьсот шестьдесят семь рублей 15 копеек
+     * @param $num
+     * @return string
+     */
 	public function num2str($num) {
 		$nul='ноль';
 		$ten=array(
