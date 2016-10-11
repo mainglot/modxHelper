@@ -95,8 +95,9 @@ class TimerFix {
      * @return string
      */
     protected function _getReportHtml () {
-        return implode('<br>', array_map(function($item){
-                return sprintf($this->_templateHtml, $item[0], $item[1]);
+        $html = $this->_templateHtml;
+        return implode('<br>', array_map(function($item) use ($html) {
+                return sprintf($html, $item[0], $item[1]);
             }, $this->_list)).'<br>';
     }
 
