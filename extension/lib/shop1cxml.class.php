@@ -24,7 +24,8 @@
 
 class Shop1cXML {
     
-    protected $tmpCategoriesClass = 'Shopmodx1cTmpCategory';
+    
+	protected $tmpCategoriesClass = 'Shopmodx1cTmpCategory';
 	protected $tmpProductsClass = 'Shopmodx1cTmpProduct';
 	
 	public $groups = [];
